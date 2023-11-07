@@ -1,0 +1,12 @@
+namespace MSSQL.model
+{
+    public class postheader
+    {
+        public string Route { get; set; }
+        public string HttpMethod { get; set; }
+        public object Data { get; set; }
+
+        public string Token { get; set; }
+
+    }
+}

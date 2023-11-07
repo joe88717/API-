@@ -1,0 +1,89 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using MSSQL.model;
+using Newtonsoft.Json;
+using System;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MSSQL.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ClientController : ControllerBase
+    {
+        //get
+        public async Task<ActionResult> Get777()
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Get, "http://10.11.24.95/SinoCloud.Service/Service/GetTopic/117892/Test/2020-06-12/2020-11-18");
+            request.Headers.Add("Cookie", "ASP.NET_SessionId=yzjtkesztqn15e4g2kuzkspc");
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var a = await response.Content.ReadAsStringAsync();
+            return Ok(a);
+            //Console.WriteLine(await response.Content.ReadAsStringAsync());
+        }
+        //post
+        [HttpPost("Token")]
+        public async Task<ActionResult> Post111()
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://10.11.24.95/gateway.org/Route");
+            request.Headers.Add("Token", "3333");
+            var content = new StringContent("{\r\n\"Route\": \"Service/GetTopic/117889/Test/2020-06-24/2020-11-24\",\r\n\"HttpMethod\": \"GET\",\r\n\"Data\": {}\r\n}\r\n", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var b = await response.Content.ReadAsStringAsync();
+            return Ok(b);
+        }
+        //post另類寫法 把body的json打在postman
+        [HttpPost("Token2")]
+        public async Task<ActionResult> Post118([FromBody] postheader postheader)
+        {
+            try
+            {
+                using (HttpClient Client = new HttpClient())
+                {
+                    string url = "http://10.11.24.95/gateway.org/Route";
+                    Client.DefaultRequestHeaders.Add("Token", postheader.Token);
+                    postheader.Token = null;
+
+                    string RequestDataJson = JsonConvert.SerializeObject(postheader);
+                    var content = new StringContent(RequestDataJson, Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await Client.PostAsync(url, content);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responsecontent = await response.Content.ReadAsStringAsync();
+                        var jsonFormat = JsonConvert.DeserializeObject<object>(responsecontent);
+                        return Ok(jsonFormat +"122464");
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return Ok("出問題");
+            }
+            return Ok();
+        }
+
+
+        // POST api/values
+        [HttpPost("HW6")]
+        public async Task<ActionResult> Post666()
+        {
+            var client = new HttpClient();
+            var request = new HttpRequestMessage(HttpMethod.Post, "http://10.11.24.95/gateway.org/Route");
+            request.Headers.Add("Token", "3333");
+            var content = new StringContent("{\r\n\"Route\": \"Service/GetTopic/117889/Test/2020-06-24/2020-11-24\",\r\n\"HttpMethod\": \"GET\",\r\n\"Data\": {}\r\n}\r\n", null, "application/json");
+            request.Content = content;
+            var response = await client.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+            var b = await response.Content.ReadAsStringAsync();
+            return Ok(b);
+
+        }
+    }
+}

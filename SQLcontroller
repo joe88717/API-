@@ -1,0 +1,100 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MSSQL.TrainDB122464;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Data.SqlClient;
+using System.Data;
+
+namespace MSSQL.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class SQLController : ControllerBase
+    {
+        private readonly TrainDB122464Context _TrainDB122464Context;
+        public SQLController(TrainDB122464Context TrainDB122464Context)
+        {
+            _TrainDB122464Context = TrainDB122464Context;
+        }
+        [HttpGet("CODE600")]
+        public ActionResult<IEnumerable<Employee>> Get600()
+        {
+            var Employee = _TrainDB122464Context.Employee.ToList();
+            return Employee;
+        }
+        // GET api/values
+
+        [HttpGet]
+        public ActionResult<IEnumerable<string>> Get()
+        {
+            var Employee = _TrainDB122464Context.Employee.Where(X => X.DeptNo == "001").OrderByDescending(X => X.Salary).ToList();
+            return Ok(Employee);
+
+            //return new string[] { "123", "value2" };
+        }
+
+        // GET api/values/5
+        [HttpGet("666")]
+        public ActionResult<IEnumerable<String>> Get666()
+        {
+            try
+            {
+                // step 1 . using System.Data.SqlClient;
+                // step 2 . 宣告連接字串
+                string Constr = @"Persist Security Info=False;User ID=122464;Password=122464;Initial Catalog=TrainDB122464;Server=10.11.37.148";
+                // step 3 . 建立SqlConnection
+                SqlConnection conn = new SqlConnection(Constr);
+                // step 4 . 宣告查詢字串
+                string Sqlstr = "select * from Employee";
+                // step 5. 建立SqlDataAdapter
+                SqlDataAdapter da = new SqlDataAdapter(Sqlstr, conn);
+                // step 6. 建立DataSet來儲存Table
+                DataSet ds = new DataSet();
+                // step 7. 將DataAdapter查詢之後的結果，填充至DataSet
+                da.Fill(ds);
+                // step 8 . 用DataGridView1 顯示出來
+                //this.dataGridView1.DataSource = ds.Tables[0].DefaultView;
+                List<string> storeList = new List<string>();
+
+                foreach (DataRow r in ds.Tables[0].Rows)
+                {
+                    storeList.Add(r["EmpNo"].ToString());
+                    storeList.Add(r["EmpName"].ToString());
+                    storeList.Add(r["Sex"].ToString());
+                    storeList.Add(r["DeptNo"].ToString());
+                    storeList.Add(r["Salary"].ToString());
+                    storeList.Add(r["Birth"].ToString());
+                }
+                conn.Dispose();
+                conn.Close();
+                return storeList.ToArray();
+
+            }
+            catch (Exception)
+            {
+                return Ok("出問題");
+            }
+        }
+
+        // POST api/values
+        [HttpPost]
+        public void Post([FromBody] string value)
+        {
+        }
+
+        // PUT api/values/5
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] string value)
+        {
+        }
+
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
+    }
+}
